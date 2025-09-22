@@ -1,2 +1,13 @@
 .env
 __pycache
+__pycache__/app.cpython-312.pyc
+api/__pycache__/verify_api.cpython-312.pyc
+db/__pycache__/__init__.cpython-312.pyc
+db/__pycache__/mongo.cpython-312.pyc
+dto/__pycache__/__init__.cpython-312.pyc
+dto/__pycache__/verify_request.cpython-312.pyc
+dto/__pycache__/verify_response.cpython-312.pyc
+model/__pycache__/__init__.cpython-312.pyc
+model/__pycache__/user_info.cpython-312.pyc
+service/__pycache__/__init__.cpython-312.pyc
+service/__pycache__/verify_service.cpython-312.pyc

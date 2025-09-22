@@ -10,7 +10,7 @@ from service.verify_service import verify_pin
 
 router = APIRouter()
 
-@router.post("/verify" , response_model=VerifyResponse)
+@router.post("/login" , response_model=VerifyResponse)
 async def verify(jsonbody : VerifyRequest ):
 
     try:
