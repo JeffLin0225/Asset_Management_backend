@@ -1,22 +1,21 @@
 from fastapi import APIRouter
 from model.user_info import UserInfo
-from dto.verify_request import VerifyRequest
-from dto.verify_response import VerifyResponse
+from dto.login_dto import LoginRequest , LoginResponse
 from fastapi import HTTPException
 
 from fastapi.logger import logger
 
-from service.verify_service import verify_pin
+from service.login_service import verify_pin
 
 router = APIRouter()
 
-@router.post("/login" , response_model=VerifyResponse)
-async def verify(jsonbody : VerifyRequest ):
+@router.post("/login" , response_model=LoginResponse)
+async def verify(jsonbody :LoginRequest ):
 
     try:
-        verify_response :VerifyResponse = await verify_pin(jsonbody.ID,jsonbody.pin)
+        verify_response :LoginRequest = await verify_pin(jsonbody.ID,jsonbody.pin)
     except HTTPException as e:
-        # 這是你自己丟的錯誤，直接重拋
+        # 丟的錯誤，直接重拋
         raise e
     except Exception as e :    
         logger.exception("驗證時發生錯誤！ ")

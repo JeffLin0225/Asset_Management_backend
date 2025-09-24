@@ -8,7 +8,7 @@ from fastapi.logger import logger
 
 from db.mongo import get_collection
 from model.user_info import UserInfo
-from dto.verify_response import VerifyResponse
+from dto.login_dto import LoginResponse
 
 load_dotenv()
 
@@ -32,7 +32,7 @@ async def verify_pin(user_id :str , input_pin :str) -> str:
     jwt_token :str= await create_access_token(UserInfo(ID=user["ID"] , name=user["name"]))
     logger.info("ID= "+user["ID"] + " , name= "+user["name"] + " , JWT= " + jwt_token)
 
-    return VerifyResponse(
+    return LoginResponse(
             ID = user["ID"], 
             name =  user["name"],  
             access_token = jwt_token
