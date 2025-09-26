@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import login_controller
+from api import login_controller , asset_controller
 
 
 app = FastAPI(title= "資產管理系統")
@@ -20,3 +20,4 @@ app.add_middleware(
 )
 
 app.include_router(login_controller.router , prefix="/api" , tags=["驗證"])
+app.include_router(asset_controller.router , prefix="/api" , tags=["資產"])

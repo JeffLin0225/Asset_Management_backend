@@ -1,10 +1,8 @@
 from fastapi import APIRouter
-from model.user_info import UserInfo
-from dto.login_dto import LoginRequest , LoginResponse
 from fastapi import HTTPException
-
 from fastapi.logger import logger
 
+from dto.login_dto import LoginRequest , LoginResponse
 from service.login_service import verify_pin
 
 router = APIRouter()
