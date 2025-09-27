@@ -16,3 +16,5 @@ dto/__pycache__/login_dto.cpython-312.pyc
 service/__pycache__/login_service.cpython-312.pyc
 api/__pycache__/asset_controller.cpython-312.pyc
 model/__pycache__/asset_data.cpython-312.pyc
+dto/__pycache__/asset_dto.cpython-312.pyc
+service/__pycache__/asset_service.cpython-312.pyc

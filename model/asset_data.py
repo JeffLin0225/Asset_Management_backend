@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel , field_validator
 from typing import List
 
 class Card(BaseModel):
@@ -9,6 +9,12 @@ class Card(BaseModel):
     order :int
     updatedTime :str
 
+    @field_validator("amount" , mode="before")
+    def normalize_amount(cls , v):
+        if v == "" or v is None:
+            return 0 
+        return v 
+        
 class SubCategory(BaseModel):
     id :str
     title :str
@@ -22,7 +28,3 @@ class Category(BaseModel):
     order :int
     updatedTime :str  
     subCategoryList :List[SubCategory]
-
-class Asset(BaseModel):
-    userId :str
-    asset :List[Category]
