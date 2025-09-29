@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import login_controller , asset_controller
+from cache.redis_client import lifespan   
 
 
-app = FastAPI(title= "資產管理系統")
+app = FastAPI(title= "資產管理系統",lifespan=lifespan)
 
 # 允許的來源
 origins = [

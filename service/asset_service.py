@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.logger import logger
 
+from cache.redis_client import save_temp_assetData
 from db.mongo import asset_collection
 
 # async def save_asset_data(userId, asset_data = ''):
@@ -19,14 +20,16 @@ from db.mongo import asset_collection
 async def save_user_asset_info( userId :str , asset_data :str ) -> bool:
     try:
 
-        result = await asset_collection().update_one(
-                    { "userId" : userId },
-                    { "$set" : asset_data },
-                    upsert=False
-                )
-        if result.modified_count == 0:
-            logger.error("沒有使用者資訊，無法儲存")
-            return False
+        # # 存入 mongoDB
+        # result = await asset_collection().update_one(
+        #             { "userId" : userId },
+        #             { "$set" : asset_data },
+        #             upsert=False
+        #         )
+        # if result.modified_count == 0:
+        #     logger.error("沒有使用者資訊，無法儲存")
+        #     return False
+        await save_temp_assetData( userId , asset_data )
         
         logger.info('儲存成功')
         return True
