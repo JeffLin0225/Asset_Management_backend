@@ -4,7 +4,7 @@ from typing import List
 from fastapi.logger import logger
 
 from dto.asset_dto import AssetRequest
-from service.asset_service import save_user_asset_info
+from service.asset_service import temporary_asset_save
 
 router = APIRouter()
 
@@ -13,7 +13,7 @@ async def asset(jsonbody :AssetRequest ):
     try:
         # print([c.model_dump() for c in jsonbody])
         print(jsonbody.model_dump_json())
-        await save_user_asset_info( jsonbody.userId  , jsonbody.model_dump() )
+        await temporary_asset_save( jsonbody.userId  , jsonbody.model_dump() )
 
     except Exception as e:
         logger.exception("資料格式錯誤！")

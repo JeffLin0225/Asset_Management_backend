@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.logger import logger
 
-from cache.redis_client import save_temp_assetData
+from cache.redis_repository import save_asset_to_redis
 from db.mongo import asset_collection
 
 # async def save_asset_data(userId, asset_data = ''):
@@ -16,8 +16,8 @@ from db.mongo import asset_collection
     # upsert_user_asset_info(userId , asset_data = '')
     
 
-    
-async def save_user_asset_info( userId :str , asset_data :str ) -> bool:
+    # 暫存邏輯
+async def temporary_asset_save( userId :str , asset_data :str ) -> bool:
     try:
 
         # # 存入 mongoDB
@@ -29,7 +29,7 @@ async def save_user_asset_info( userId :str , asset_data :str ) -> bool:
         # if result.modified_count == 0:
         #     logger.error("沒有使用者資訊，無法儲存")
         #     return False
-        await save_temp_assetData( userId , asset_data )
+        await save_asset_to_redis( userId , asset_data )
         
         logger.info('儲存成功')
         return True
@@ -37,7 +37,8 @@ async def save_user_asset_info( userId :str , asset_data :str ) -> bool:
     except Exception as e:
         logger.exception(f"更新資產資料失敗 userId={userId}")
         return False
-    
+
+
 # async def find_user_asset_info( userId :str ) -> bool:
 #     try:
 

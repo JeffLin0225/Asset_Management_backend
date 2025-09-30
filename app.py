@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import login_controller , asset_controller
-from cache.redis_client import lifespan   
+from cache.redis_worker import lifespan   
 
 
 app = FastAPI(title= "資產管理系統",lifespan=lifespan)

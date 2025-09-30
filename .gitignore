@@ -18,3 +18,6 @@ api/__pycache__/asset_controller.cpython-312.pyc
 model/__pycache__/asset_data.cpython-312.pyc
 dto/__pycache__/asset_dto.cpython-312.pyc
 service/__pycache__/asset_service.cpython-312.pyc
+cache/__pycache__/redis_worker.cpython-312.pyc
+cache/__pycache__/redis_client.cpython-312.pyc
+cache/__pycache__/redis_repository.cpython-312.pyc
