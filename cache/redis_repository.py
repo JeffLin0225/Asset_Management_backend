@@ -1,12 +1,8 @@
-import logging
-from fastapi import FastAPI
-import redis
-import os 
-import asyncio
 import json
+import logging
 from datetime import datetime
 from fastapi.logger import logger
-# logger = logging.getLogger("uvicorn.error")  # 確保 log 出現在 console
+logger = logging.getLogger("uvicorn.error")  # 確保 log 出現在 console
 from cache.redis_client import redis_client
  
 ''' 把資料先存到 Redis '''

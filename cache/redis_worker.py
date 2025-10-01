@@ -5,9 +5,10 @@ import os
 import asyncio
 import json
 from datetime import datetime
-from fastapi.logger import logger
-# logger = logging.getLogger("uvicorn.error")  # 確保 log 出現在 console
+logger = logging.getLogger("uvicorn.error")  # 確保 log 出現在 console
+
 from cache.redis_client import redis_client
+from db.mongo_repository import save_asset
 
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
@@ -62,7 +63,12 @@ async def lifespan(app: FastAPI):
         if raw_data:
             data_with_ts = json.loads(raw_data.decode("utf-8"))
             logger.info("啟動的過期資料：" + str(data_with_ts))
-            # await to_save_mongo(data_with_ts)
+            
+            # # 儲存mongo DB
+            # try:
+            #     await save_asset(data_with_ts)
+            # except:
+            #     logger.error(f'{user_id}:儲存DB失敗')    
 
     asyncio.create_task(redis_subscribe_expired())
     yield

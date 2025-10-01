@@ -4,16 +4,25 @@ from typing import List
 from fastapi.logger import logger
 
 from dto.asset_dto import AssetRequest
-from service.asset_service import temporary_asset_save
+from service.asset_service import find_user_asset_info , save_temporary_asset
 
 router = APIRouter()
 
-@router.post("/saveAsset")
-async def asset(jsonbody :AssetRequest ):
+@router.get("/getAsset")
+async def getAsset(userId :str ):
     try:
-        # print([c.model_dump() for c in jsonbody])
+        print(userId)
+        return await find_user_asset_info( userId )
+    except Exception as e:
+        logger.exception("資料格式錯誤！")
+        raise HTTPException(status_code=500 , detail="資料格式錯誤！") 
+    
+
+@router.post("/saveAsset")
+async def saveAsset(jsonbody :AssetRequest ):
+    try:
         print(jsonbody.model_dump_json())
-        await temporary_asset_save( jsonbody.userId  , jsonbody.model_dump() )
+        await save_temporary_asset( jsonbody.userId  , jsonbody.model_dump() )
 
     except Exception as e:
         logger.exception("資料格式錯誤！")

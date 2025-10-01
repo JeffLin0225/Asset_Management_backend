@@ -21,3 +21,5 @@ service/__pycache__/asset_service.cpython-312.pyc
 cache/__pycache__/redis_worker.cpython-312.pyc
 cache/__pycache__/redis_client.cpython-312.pyc
 cache/__pycache__/redis_repository.cpython-312.pyc
+db/__pycache__/mongo_client.cpython-312.pyc
+db/__pycache__/mongo_repository.cpython-312.pyc

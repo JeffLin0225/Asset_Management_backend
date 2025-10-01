@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.logger import logger
 
-from db.mongo import user_collection
+from db.mongo_client import user_collection
 from model.user_info import UserInfo
 from dto.login_dto import LoginResponse
 
