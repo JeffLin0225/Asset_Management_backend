@@ -23,7 +23,7 @@ async def save_asset( userId :str , asset_data :str ) -> bool:
         # 存入 mongoDB
         result = await asset_collection().update_one(
                     { "userId" : userId },
-                    { "$set" : asset_data },
+                    { "$set" :  { "asset": asset_data } },
                     upsert=False
                 )
         if result.modified_count == 0:

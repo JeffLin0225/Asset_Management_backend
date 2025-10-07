@@ -33,7 +33,11 @@ async def redis_subscribe_expired():
                     userid :str = expired_key[len("debounce_timer:"):]
                     data_key :str = f"latest_data:{userid}"
                     data_value :str = redis_client.get(data_key)
-                    logger.info("過期資料存入："+data_value.decode("utf-8"))
+                    parsed = json.loads(data_value) # 轉成dict
+                    logger.info("redis過期資料存入db："+json.dumps(json.loads(data_value.decode("utf-8")) , ensure_ascii=False))
+                    payload = parsed.get("data")
+                    
+                    asyncio.run( save_asset(payload["userId"], payload["asset"]) )
     await asyncio.to_thread(_listen)
 
 @asynccontextmanager
