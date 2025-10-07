@@ -3,20 +3,12 @@ from fastapi.logger import logger
 
 from cache.redis_repository import save_asset_to_redis
 from db.mongo_client import asset_collection
+from db.mongo_repository import select_user_asset_info
 
 # 查詢資料
-async def find_user_asset_info( userId :str ) :
-    try:
+async def find_user_asset_info( userId :str )  -> bool:
 
-        result = await asset_collection().find_one(
-            { "userId": userId },
-            {"_id": 0, "asset": 1} 
-        )
-        return result["asset"] 
-    
-    except Exception as e:
-        logger.exception(f"查詢使用者失敗 userId={userId}")
-        return False
+        return await select_user_asset_info(userId)
 
 # 暫存邏輯
 async def save_temporary_asset( userId :str , asset_data :str ) -> bool:

@@ -18,3 +18,6 @@ def user_collection():
 
 def asset_collection():
     return asset_db["asset"]
+
+def analyze_collection():
+    return asset_db["analyze"]

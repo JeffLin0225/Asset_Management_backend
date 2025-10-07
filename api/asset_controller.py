@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from fastapi import HTTPException
-from typing import List 
 from fastapi.logger import logger
 
 from dto.asset_dto import AssetRequest

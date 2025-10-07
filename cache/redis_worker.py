@@ -64,11 +64,12 @@ async def lifespan(app: FastAPI):
             data_with_ts = json.loads(raw_data.decode("utf-8"))
             logger.info("啟動的過期資料：" + str(data_with_ts))
             
-            # # 儲存mongo DB
-            # try:
-            #     await save_asset(data_with_ts)
-            # except:
-            #     logger.error(f'{user_id}:儲存DB失敗')    
+            # 儲存mongo DB
+            try:
+                await save_asset(data_with_ts)
+                logger.info("存入ＤＢ了")
+            except:
+                logger.exception(f'{user_id}:儲存DB失敗')    
 
     asyncio.create_task(redis_subscribe_expired())
     yield
