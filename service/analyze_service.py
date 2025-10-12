@@ -1,29 +1,70 @@
 from fastapi import HTTPException
 from fastapi.logger import logger
 from typing import List 
+from datetime import datetime
 from model.asset_data import Category
-from model.snapshot import Snapshot , SnapshotCategory 
+from model.snapshot import Snapshot 
 
-from db.mongo_repository import select_user_asset_info
+from db.mongo_repository import select_user_asset_info , save_analyze
 
-# 查詢資料
+# 將 asset 資料格式 -> analyze 資料格式
+def build_snapshot(subCategoryList : List[dict]) -> dict:
+    result = {}
+    total_sum = 0 
+
+    for sub in subCategoryList:
+      items = {card["name"] : card["amount"] for card in sub.get("cardList" , [])}
+      sub_total = sum(items.values())
+      result[sub["title"]] = {
+         "items" : items,
+         "total" : sub_total
+      }
+      total_sum += sub_total
+
+    result["total"] = total_sum 
+    return result
+
+# 抄寫資料
 async def copy_asset_info(userId :str)  -> bool:
+  
+  # 將（asset資料）拿出後，依照種類分類
+  asset_data :List[Category] = await select_user_asset_info(userId)
+  asset_category = asset_data[0]["subCategoryList"]
+  liability_category = asset_data[1]["subCategoryList"]
+  other_category = asset_data[2]["subCategoryList"]
 
-    asset_data :List[Category] = await select_user_asset_info(userId)
-    asset_category = asset_data[0]["subCategoryList"]
-    liability = asset_data[1]["subCategoryList"]
-    other = asset_data[2]["subCategoryList"]
+  # print("asset_category =========================")
+  # print(asset_category) 
+  # print("liability_category =========================")
+  # print(liability_category)
+  print("other_category =========================")
+  # print(other_category)
 
-    print(asset_category) 
-    print("=========================")
-    print(liability)
-    print("=========================")
-    print(other)
+  # 將 asset 資料格式 -> analyze 資料格式
+  assets_dict = build_snapshot(asset_category)
+  liability_dict = build_snapshot(liability_category)
+  other_dict = build_snapshot(other_category)
+  
+  totals = {
+    "assets" : assets_dict.get("total"),
+    "liabilities" : liability_dict.get("total"),
+    "others" : other_dict.get("total"),
+    "netWorth" : assets_dict.get("total") - liability_dict.get("total") - other_dict.get("total")
+  }
 
-    
-    
-
-    
+  # 組裝 analyze 資料
+  snapshot = Snapshot(
+     userId= userId,
+     date= datetime.now().strftime("%Y-%m-%d"),
+     assets= assets_dict,
+     liabilities= liability_dict,
+     others= other_dict,
+     totals= totals
+  )
+  print(snapshot.model_dump())
+  db_save_result = await save_analyze(snapshot)
+  return db_save_result
+  
 
 '''
 [

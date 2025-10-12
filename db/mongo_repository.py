@@ -1,5 +1,6 @@
 from fastapi.logger import logger
 from datetime import datetime
+from model.snapshot import Snapshot 
 from db.mongo_client import asset_collection ,analyze_collection
 
 # 查詢資料
@@ -38,23 +39,16 @@ async def save_asset( userId :str , asset_data :str ) -> bool:
         return False
 
 # 儲存邏輯
-async def save_analyze( userId :str , asset_data :str ) -> bool:
+async def save_analyze( snapshot: Snapshot ) -> bool:
     try:
 
         # 存入 mongoDB
-        result = await analyze_collection().insert_one({
-                    "userId" : userId,
-                    "asset" : asset_data,
-                    "date" : datetime.now(datetime.day)
-                })
-
-        if not result.inserted_id:
-            logger.exception("新增分析失敗，沒有 inserted_id")
-            return False
-        
-        logger.info('新增分析成功:'+result)
+        await analyze_collection().insert_one(
+            snapshot.model_dump()
+        )
+        logger.info(f"✅ Snapshot 已存入分析紀錄 userId={snapshot.userId}")
         return True
     
     except Exception as e:
-        logger.exception(f"新增資產分析資料失敗 userId={userId}")
+        logger.exception(f"❌ 儲存 Snapshot 失敗 userId={snapshot.userId}")
         return False
