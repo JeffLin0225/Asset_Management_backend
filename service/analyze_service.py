@@ -5,9 +5,9 @@ from datetime import datetime
 from model.asset_data import Category
 from model.snapshot import Snapshot 
 
-from db.mongo_repository import select_user_asset_info , save_analyze
+from db.mongo_repository import select_user_asset_info , select_user_analyze_info , save_analyze 
 
-# 將 asset 資料格式 -> analyze 資料格式
+''' 將 asset 資料格式 -> analyze 資料格式 '''
 def build_snapshot(subCategoryList : List[dict]) -> dict:
     result = {}
     total_sum = 0 
@@ -24,21 +24,14 @@ def build_snapshot(subCategoryList : List[dict]) -> dict:
     result["total"] = total_sum 
     return result
 
-# 抄寫資料
-async def copy_asset_info(userId :str)  -> bool:
+''' 抄寫資料 ''' 
+async def copy_asset_info_analyze(userId :str) -> bool:
   
   # 將（asset資料）拿出後，依照種類分類
   asset_data :List[Category] = await select_user_asset_info(userId)
   asset_category = asset_data[0]["subCategoryList"]
   liability_category = asset_data[1]["subCategoryList"]
   other_category = asset_data[2]["subCategoryList"]
-
-  # print("asset_category =========================")
-  # print(asset_category) 
-  # print("liability_category =========================")
-  # print(liability_category)
-  print("other_category =========================")
-  # print(other_category)
 
   # 將 asset 資料格式 -> analyze 資料格式
   assets_dict = build_snapshot(asset_category)
@@ -61,10 +54,43 @@ async def copy_asset_info(userId :str)  -> bool:
      others= other_dict,
      totals= totals
   )
-  print(snapshot.model_dump())
-  db_save_result = await save_analyze(snapshot)
-  return db_save_result
-  
+  result = await save_analyze(snapshot)
+  return result
+
+
+''' 查詢分析資料 '''
+async def find_analyze_info(userId: str) -> list[Snapshot]:
+    results = await select_user_analyze_info(userId)
+    snapshots: list[Snapshot] = []
+
+    if not results:
+        return snapshots  # 空 list，前端就知道沒有資料
+
+    for result in results:
+        assets_dict = result.get("assets", {})
+        liability_dict = result.get("liabilities", {})
+        other_dict = result.get("others", {})
+
+        totals = {
+            "assets": assets_dict.get("total", 0),
+            "liabilities": liability_dict.get("total", 0),
+            "others": other_dict.get("total", 0),
+            "netWorth": assets_dict.get("total", 0)
+                        - liability_dict.get("total", 0)
+                        - other_dict.get("total", 0)
+        }
+
+        snapshot = Snapshot(
+            userId=userId,
+            date=datetime.now().strftime("%Y-%m-%d"),
+            assets=assets_dict,
+            liabilities=liability_dict,
+            others=other_dict,
+            totals=totals
+        )
+        snapshots.append(snapshot)
+
+    return snapshots
 
 '''
 [

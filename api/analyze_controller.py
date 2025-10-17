@@ -5,7 +5,7 @@ from typing import List
 from fastapi.logger import logger
 
 from dto.asset_dto import AssetRequest
-from service.analyze_service import copy_asset_info
+from service.analyze_service import copy_asset_info_analyze , find_analyze_info
 
 router = APIRouter()
 
@@ -13,19 +13,22 @@ router = APIRouter()
 async def getAnalyze(userId :str ):
     try:
         print(userId)
-        return await copy_asset_info( userId )
+        result = await find_analyze_info( userId )
+        
+        return [result]
+    except Exception as e:
+        logger.exception("資料格式錯誤！")
+        raise HTTPException(status_code=500 , detail="資料格式錯誤！")
+    
+
+@router.get("/copyAnalyze")
+async def copyAnalyze(userId :str ):
+    try:
+        print(userId)
+        result = await copy_asset_info_analyze(userId)
+        
+        return result
     except Exception as e:
         logger.exception("資料格式錯誤！")
         raise HTTPException(status_code=500 , detail="資料格式錯誤！") 
-    
-
-# @router.post("/saveAsset")
-# async def saveAsset(jsonbody :AssetRequest ):
-#     try:
-#         print(jsonbody.model_dump_json())
-#         await save_temporary_asset( jsonbody.userId  , jsonbody.model_dump() )
-
-#     except Exception as e:
-#         logger.exception("資料格式錯誤！")
-#         raise HTTPException(status_code=500 , detail="資料格式錯誤！") 
     

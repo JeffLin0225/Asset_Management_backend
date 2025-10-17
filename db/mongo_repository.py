@@ -38,6 +38,20 @@ async def save_asset( userId :str , asset_data :str ) -> bool:
         logger.exception(f"更新資產資料失敗 userId={userId}")
         return False
 
+
+# 查詢資料
+async def select_user_analyze_info( userId :str ) -> list[dict]:
+    try:
+
+        result = await analyze_collection().find(
+            { "userId": userId }
+        ).to_list(length=None)
+        return result
+    
+    except Exception as e:
+        logger.exception(f"查詢使用者失敗 userId={userId}")
+        return False
+
 # 儲存邏輯
 async def save_analyze( snapshot: Snapshot ) -> bool:
     try:
