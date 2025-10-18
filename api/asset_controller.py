@@ -20,7 +20,7 @@ async def getAsset(userId :str ):
 @router.post("/saveAsset")
 async def saveAsset(jsonbody :AssetRequest ):
     try:
-        print(jsonbody.model_dump_json())
+
         await save_temporary_asset( jsonbody.userId  , jsonbody.model_dump() )
 
     except Exception as e:

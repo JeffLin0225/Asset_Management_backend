@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from fastapi.logger import logger
 from typing import List 
-from datetime import datetime
+from datetime import datetime ,date
 from model.asset_data import Category
-from model.snapshot import Snapshot 
+from model.snapshot import Snapshot , SnapshotDTO
 
 from db.mongo_repository import select_user_asset_info , select_user_analyze_info , save_analyze 
 
@@ -70,6 +70,10 @@ async def find_analyze_info(userId: str) -> list[Snapshot]:
         assets_dict = result.get("assets", {})
         liability_dict = result.get("liabilities", {})
         other_dict = result.get("others", {})
+        db_date = result.get("date")
+        
+        if isinstance(db_date, (datetime, date)): # 整理時間格式
+            db_date = db_date.strftime("%Y-%m-%d")
 
         totals = {
             "assets": assets_dict.get("total", 0),
@@ -80,9 +84,9 @@ async def find_analyze_info(userId: str) -> list[Snapshot]:
                         - other_dict.get("total", 0)
         }
 
-        snapshot = Snapshot(
+        snapshot = SnapshotDTO(
             userId=userId,
-            date=datetime.now().strftime("%Y-%m-%d"),
+            date=db_date,
             assets=assets_dict,
             liabilities=liability_dict,
             others=other_dict,

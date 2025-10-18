@@ -1,5 +1,6 @@
 from pydantic import BaseModel ,RootModel
 from typing import Dict , Union
+from datetime import datetime, date
 
 # 小物件
 class SnapshotItem(BaseModel):
@@ -18,6 +19,14 @@ class Totals(BaseModel):
     netWorth: int
 
 class Snapshot(BaseModel):
+    userId :str
+    date :datetime
+    assets: SnapshotCategory
+    liabilities: SnapshotCategory
+    others: SnapshotCategory
+    totals: Totals
+
+class SnapshotDTO(BaseModel):
     userId :str
     date :str
     assets: SnapshotCategory

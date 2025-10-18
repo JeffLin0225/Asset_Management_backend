@@ -31,7 +31,7 @@ async def redis_subscribe_expired():
                 if data_value:
                     parsed = json.loads(data_value)
                     payload = parsed.get("data")
-                    logger.info("redis 過期資料存入 DB：" + json.dumps(payload, ensure_ascii=False))
+                    logger.info("redis 過期資料存入 DB")
                     await save_asset(payload["userId"], payload["asset"])
 
 @asynccontextmanager
@@ -50,12 +50,12 @@ async def lifespan(app: FastAPI):
         raw_data = await redis_client.get(key)
         if raw_data:
             data_with_ts = json.loads(raw_data)
-            logger.info("啟動的過期資料：" + str(data_with_ts))
+            # logger.info("啟動的過期資料：" + str(data_with_ts))
             try:
                 await save_asset(data_with_ts["userId"], data_with_ts["asset"])
-                logger.info("存入 DB 了")
+                logger.info("(存入)資料庫了")
             except Exception:
-                logger.exception(f"{user_id}: 儲存 DB 失敗")
+                logger.exception(f"{user_id}: (儲存)資料庫失敗")
 
     asyncio.create_task(redis_subscribe_expired())
     yield

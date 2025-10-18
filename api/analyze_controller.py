@@ -15,7 +15,7 @@ async def getAnalyze(userId :str ):
         print(userId)
         result = await find_analyze_info( userId )
         
-        return [result]
+        return result
     except Exception as e:
         logger.exception("資料格式錯誤！")
         raise HTTPException(status_code=500 , detail="資料格式錯誤！")
