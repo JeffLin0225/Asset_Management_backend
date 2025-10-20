@@ -27,9 +27,13 @@ async def save_asset( userId :str , asset_data :str ) -> bool:
                     { "$set" :  { "asset": asset_data } },
                     upsert=False
                 )
-        if result.modified_count == 0:
+        if result.matched_count == 0:
             logger.error("沒有使用者資訊，無法儲存")
             return False
+
+        if result.modified_count == 0:
+            logger.info("資料相同，沒有更新任何欄位")
+            return True   # 這裡可以視為成功，只是沒有變動
         
         logger.info('儲存成功')
         return True
