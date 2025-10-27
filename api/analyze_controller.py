@@ -1,16 +1,17 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import HTTPException
 from typing import List 
 from fastapi.logger import logger
 
+from service.auth import verify_token
 from dto.asset_dto import AssetRequest
 from service.analyze_service import copy_asset_info_analyze , find_analyze_info
 
 router = APIRouter()
 
 @router.get("/getAnalyze")
-async def getAnalyze(userId :str ):
+async def getAnalyze(userId :str , _=Depends(verify_token)):
     try:
         print(userId)
         result = await find_analyze_info( userId )

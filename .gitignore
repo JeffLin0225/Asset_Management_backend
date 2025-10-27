@@ -28,3 +28,4 @@ service/__pycache__/analyze_service.cpython-312.pyc
 model/__pycache__/snapshot.cpython-312.pyc
 api/__pycache__/analyze_controller.cpython-312.pyc
 service/__pycache__/analyze_service.cpython-312.pyc
+service/__pycache__/auth.cpython-312.pyc
