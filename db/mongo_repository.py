@@ -1,9 +1,10 @@
 from fastapi.logger import logger
-from datetime import datetime
-from model.snapshot import Snapshot 
-from db.mongo_client import asset_collection ,analyze_collection
+from typing import List 
 
-# 查詢資料
+from model.snapshot import Snapshot 
+from db.mongo_client import asset_collection ,analyze_collection , user_collection
+
+# 查詢資產資料
 async def select_user_asset_info( userId :str ) -> bool:
     try:
 
@@ -17,7 +18,7 @@ async def select_user_asset_info( userId :str ) -> bool:
         logger.exception(f"查詢使用者失敗 userId={userId}")
         return False
 
-# 儲存邏輯
+# 儲存資產邏輯
 async def save_asset( userId :str , asset_data :str ) -> bool:
     try:
 
@@ -43,7 +44,7 @@ async def save_asset( userId :str , asset_data :str ) -> bool:
         return False
 
 
-# 查詢資料
+# 查詢分析資料
 async def select_user_analyze_info( userId :str ) -> list[dict]:
     try:
 
@@ -56,17 +57,30 @@ async def select_user_analyze_info( userId :str ) -> list[dict]:
         logger.exception(f"查詢使用者失敗 userId={userId}")
         return False
 
-# 儲存邏輯
-async def save_analyze( snapshot: Snapshot ) -> bool:
+# 儲存分析邏輯
+async def save_analyze(snapshot: Snapshot) -> bool:
+    try:
+        # upsert：存在就更新，不存在就新增
+        await analyze_collection().update_one(
+            {"userId": snapshot.userId, "date": snapshot.date},
+            {"$set": snapshot.model_dump()},
+            upsert=True
+        )
+        logger.info(f"✅ Snapshot 已存入/更新 userId={snapshot.userId}, date={snapshot.date}")
+        return True
+
+    except Exception as e:
+        logger.exception(f"❌ 儲存 Snapshot 失敗 userId={snapshot.userId}, date={snapshot.date}")
+        raise
+
+# 查詢所有使用者
+async def select_all_user_id() -> List[str]:
     try:
 
-        # 存入 mongoDB
-        await analyze_collection().insert_one(
-            snapshot.model_dump()
-        )
-        logger.info(f"✅ Snapshot 已存入分析紀錄 userId={snapshot.userId}")
-        return True
+        cursor = user_collection().find({}, {"ID": 1, "_id": 0})
+        user_ids = [doc["ID"] async for doc in cursor]
+        return user_ids
     
     except Exception as e:
-        logger.exception(f"❌ 儲存 Snapshot 失敗 userId={snapshot.userId}")
-        return False
+        logger.error(f"❌ 查詢所有使用者 ID 失敗")
+        return []

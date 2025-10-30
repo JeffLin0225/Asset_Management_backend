@@ -1,11 +1,12 @@
 from fastapi import HTTPException
 from fastapi.logger import logger
 from typing import List 
+import time
 from datetime import datetime ,date
 from model.asset_data import Category
 from model.snapshot import Snapshot , SnapshotDTO
 
-from db.mongo_repository import select_user_asset_info , select_user_analyze_info , save_analyze 
+from db.mongo_repository import select_user_asset_info , select_user_analyze_info , save_analyze , select_all_user_id
 
 ''' 將 asset 資料格式 -> analyze 資料格式 '''
 def build_snapshot(subCategoryList : List[dict]) -> dict:
@@ -57,6 +58,37 @@ async def copy_asset_info_analyze(userId :str) -> bool:
   result = await save_analyze(snapshot)
   return result
 
+''' 批次執行抄寫動作 '''
+async def batch_copy_analyze():
+    start_time = time.time()
+
+    user_ids = await select_all_user_id()
+    if len(user_ids) == 0 :
+      return {}
+    
+    total = len(user_ids)
+    success = 0
+    fail = 0
+
+    for uid in user_ids:
+        try:
+            await copy_asset_info_analyze(uid)
+            success += 1
+        except Exception as e:
+            fail += 1
+
+    duration = time.time() - start_time
+
+    logger.info(
+        f"📊 批次抄寫完成 | 總數: {total} | 成功: {success} | 失敗: {fail} | 耗時: {duration:.2f} 秒"
+    )
+
+    return {
+        "total": total,
+        "success": success,
+        "fail": fail,
+        "duration": duration
+    }
 
 ''' 查詢分析資料 '''
 async def find_analyze_info(userId: str) -> list[Snapshot]:
