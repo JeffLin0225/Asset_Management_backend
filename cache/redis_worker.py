@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from redis import asyncio as aioredis   # ✅ 正確的 async redis import
 
-from db.mongo_repository import save_asset
+from db.mongo_repository import save_asset , mongodb_check_life
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -39,12 +39,21 @@ async def lifespan(app: FastAPI):
     global redis_client
     redis_client = aioredis.from_url(REDIS_URL, decode_responses=True)
 
+    # redis 冷啟動預處理
     try:
         await redis_client.config_set("notify-keyspace-events", "Ex")
         logger.info("已設定 notify-keyspace-events = Ex")
     except Exception as e:
         logger.warning(f"設定 notify-keyspace-events 失敗：{e}")
 
+    # 資料庫 冷啟動預處理
+    try:
+        await mongodb_check_life()
+        logger.info("✅ MongoDB 已預熱連線池")
+    except Exception:
+        logger.exception("❌ MongoDB 預熱失敗")
+
+    # 檢查redis是否還殘留東西
     async for key in redis_client.scan_iter("latest_data:*"):
         user_id = key[len("latest_data:"):]
         raw_data = await redis_client.get(key)

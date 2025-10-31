@@ -2,7 +2,15 @@ from fastapi.logger import logger
 from typing import List 
 
 from model.snapshot import Snapshot 
-from db.mongo_client import asset_collection ,analyze_collection , user_collection
+from db.mongo_client import asset_collection ,analyze_collection , user_collection , asset_db
+
+# 檢查生命
+async def mongodb_check_life():
+    try:
+        await asset_db.command("ping")
+        logger.info("✅ MongoDB 已預熱連線池")
+    except Exception:
+        logger.exception("❌ MongoDB 預熱失敗")
 
 # 查詢資產資料
 async def select_user_asset_info( userId :str ) -> bool:
