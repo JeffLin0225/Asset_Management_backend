@@ -11,7 +11,7 @@ load_dotenv()
 app = FastAPI(title= "資產管理系統",lifespan=lifespan)
 
 origins = os.getenv("CORS_ORIGINS", "").split(",")
-print("環境參數:"+origins)
+print("環境參數:"+str(origins))
 
 app.add_middleware(
     CORSMiddleware,
