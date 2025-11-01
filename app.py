@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 import os
-import json
 from dotenv import load_dotenv
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,7 +10,7 @@ load_dotenv()
 
 app = FastAPI(title= "資產管理系統",lifespan=lifespan)
 
-origins = json.loads(os.getenv("CORS_ORIGINS", "[]"))
+origins = os.getenv("CORS_ORIGINS", "").split(",")
 print("環境參數:"+origins)
 
 app.add_middleware(
